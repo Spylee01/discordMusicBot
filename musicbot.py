@@ -243,7 +243,7 @@ async def on_message(message):
 
         await message.channel.send("**Shuffled queue** :ok_hand:")
 
-    #skips, "full skip" based on user role not yet implemented
+    #skips
     elif message.content.lower().split()[0] == ("!s") or message.content.lower().split()[0] == ("!skip"):
         userCount = len(vc.members)
         if message.author.name not in voters:
@@ -257,7 +257,7 @@ async def on_message(message):
             votes = 0
             voters = []
 
-    #full skip, user with role "DJ" may skip songs without voting
+    #full skip, user with role "DJ" or admin may skip songs without voting
     elif message.content.lower().split()[0] == "!fs" or message.content.lower().split()[0] == "!fullskip":
         dj = False
         for role in message.author.roles:

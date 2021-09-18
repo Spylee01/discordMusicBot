@@ -37,9 +37,13 @@ vp = None
 confirm = False
 queue = []
 requestedBy = []
+votes = 0
+voters = []
 
 #clears folder containing downloaded mp3
 def reset(queue, vp, rb):
+    global votes
+    global voters    
     #downloaded music folder
     #place downloaded music folder in same dir as musicbot.py
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -50,6 +54,8 @@ def reset(queue, vp, rb):
         del rb[0]
     if len(queue) > 0:
         play_next(queue, vp, rb)
+    votes = 0
+    voters = []
 
 #downloads and plays next song in queue
 def play_next(queue, vp, rb):
@@ -104,6 +110,8 @@ async def on_message(message):
     global queue
     global requestedBy
     global confirm
+    global votes
+    global voters
 
     #ignore msgs from bot itself
     if message.author == client.user:
@@ -236,9 +244,38 @@ async def on_message(message):
         await message.channel.send("**Shuffled queue** :ok_hand:")
 
     #skips, "full skip" based on user role not yet implemented
-    elif message.content.lower().split()[0] == ("!s"):
-        vp.stop()
-        await message.channel.send(":fast_forward: ***Skipped*** :thumbsup:")
+    elif message.content.lower().split()[0] == ("!s") or message.content.lower().split()[0] == ("!skip"):
+        userCount = len(vc.members)
+        if message.author.name not in voters:
+            votes += 1
+            voters.append(message.author.name)
+        if int(userCount/2) < votes:
+            await message.channel.send("Skip vote has been called! Votes: " + str(votes) + "/" + str(int(userCount/2)))
+        elif int(userCount/2) >= votes:
+            vp.stop()
+            await message.channel.send(":fast_forward: ***Skipped*** :thumbsup:")
+            votes = 0
+            voters = []
+
+    #full skip, user with role "DJ" may skip songs without voting
+    elif message.content.lower().split()[0] == "!fs" or message.content.lower().split()[0] == "!fullskip":
+        dj = False
+        for role in message.author.roles:
+            if role.name.lower() == "dj":
+                dj = True
+                break
+            for perm in role.permissions:
+                if perm[0] == 'administrator':
+                    if perm[1]:
+                        dj = True
+                        break
+        if dj:
+            vp.stop()
+            await message.channel.send(":fast_forward: ***Full Skipped*** :thumbsup:")
+            votes = 0
+            voters = []
+        else:
+            await message.channel.send("You must have a role titled \"DJ\"")
 
     #clears queue
     elif message.content.lower().split()[0] == ("!clear"):

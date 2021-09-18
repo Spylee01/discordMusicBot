@@ -1,6 +1,6 @@
 #musicbot.py
 import youtube_dl
-from youtubesearchpython import VideosSearch
+from youtubesearchpython import VideosSearch,PlaylistsSearch
 import discord
 from discord import FFmpegPCMAudio
 import os
@@ -143,12 +143,18 @@ async def on_message(message):
 
             #searching for videos
             videoInfo = VideosSearch(videoS, limit=1)
+            playlistInfo = PlaylistsSearch(videoS, limit=1)
 
             videoDuration = videoInfo.result()['result'][0]['duration']
             vidDurationList = videoDuration.split(":")
+
+            playlist = False
             
-            if videoInfo.result()['result'] == []:
+            if videoInfo.result()['result'] == [] and playlistInfo.result()['result'] == []:
                 await message.channel.send(":x: **No matches**")
+        
+            elif videoInfo.result()['result'] == []:
+                playlist = True
 
             elif len(vidDurationList) > 2:
                 await message.channel.send(":x: **Please keep songs under 10 minutes in length** :x:")
@@ -157,7 +163,7 @@ async def on_message(message):
                 await message.channel.send(":x: **Please keep songs under 10 minutes in length** :x:")
 
             #if video passes checks, download/add to queue
-            else:
+            elif not playlist:
                 videoTitle = videoInfo.result()['result'][0]['title']
 
                 queue.append(videoTitle)
@@ -176,6 +182,10 @@ async def on_message(message):
                         play_next(queue, vp, requestedBy)
                         if len(queue) == 1:
                             await message.channel.send("**Playing** :notes: `" + videoTitle + "` - Now!")
+                
+            elif playlist:
+                await message.channel.send("Playlist support currently in progress")
+
 
     #joins vc
     elif message.content.lower().split()[0] == ("!summon") or message.content.lower().split()[0] == ("!join"):

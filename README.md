@@ -7,6 +7,4 @@ FFmpeg: https://www.ffmpeg.org/download.html
 
 NOTE: This bot will only work in one voice channel in one server at a time. Errors will occour otherwise.
 
-Known issues:
--The first song that plays will begin off-speed (usually quick)
--Rarely songs will cut off early
+Known issues: The first song that plays will begin off-speed (usually faster) and rarely songs will cut off early

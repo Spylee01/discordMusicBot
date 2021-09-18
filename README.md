@@ -12,3 +12,5 @@ NOTE: This bot will only work in one voice channel in one server at a time. Erro
 For a user to use !fullskip, they must be an admin or have a role titled 'DJ'
 
 Known issues: The first song that plays will begin off-speed (usually faster) and rarely songs will cut off early
+
+Feel free to message me on discord with any suggestions, bugs, or questions! Spylee01#9961
